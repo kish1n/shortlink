@@ -11,6 +11,7 @@ import (
 )
 
 func initDB() (*sql.DB, error) {
+
 	dbName := os.Getenv("POSTGRES_DB")
 	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")

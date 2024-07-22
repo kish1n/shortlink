@@ -1,14 +1,12 @@
 package service
 
 import (
-	"net"
-	"net/http"
-
+	"github.com/kish1n/shortlink/internal/config"
 	"gitlab.com/distributed_lab/kit/copus/types"
 	"gitlab.com/distributed_lab/logan/v3"
 	"gitlab.com/distributed_lab/logan/v3/errors"
-
-	"github.com/kish1n/shortlink/internal/config"
+	"net"
+	"net/http"
 )
 
 type service struct {
