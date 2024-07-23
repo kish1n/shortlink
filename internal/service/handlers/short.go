@@ -14,6 +14,7 @@ type LinkRequest struct {
 }
 
 func GetShort(w http.ResponseWriter, r *http.Request) {
+
 	logger := helpers.Log(r)
 	request, err := requests.NewLinkRequest(r)
 
@@ -23,14 +24,20 @@ func GetShort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.Infof("req ini")
+
 	original := request.Original
 	db := helpers.DB(r)
+
+	logger.Infof("db con")
 
 	var pair data.CoupleLinks
 
 	for {
 		shortened := requests.GenShortURL()
+		logger.Infof(shortened)
 		existingLink, err := db.Link().FilterByShortened(shortened).Get()
+		logger.Info(existingLink)
 		if err != nil {
 			logger.WithError(err).Error("failed to query db handlers/short.go 35")
 			ape.RenderErr(w)
@@ -44,6 +51,8 @@ func GetShort(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
+
+	logger.Infof("checked")
 
 	var req LinkRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
