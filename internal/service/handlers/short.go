@@ -24,8 +24,6 @@ func GetShort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Infof("req ini")
-
 	original := request.Original
 	db := helpers.DB(r)
 
@@ -37,22 +35,21 @@ func GetShort(w http.ResponseWriter, r *http.Request) {
 		shortened := requests.GenShortURL()
 		logger.Infof(shortened)
 		existingLink, err := db.Link().FilterByShortened(shortened).Get()
-		logger.Info(existingLink)
 		if err != nil {
 			logger.WithError(err).Error("failed to query db handlers/short.go 35")
 			ape.RenderErr(w)
 			return
 		}
 		if existingLink == nil {
+			logger.Info("There's already a link")
 			pair = data.CoupleLinks{
 				Shortened: shortened,
 				Original:  original,
 			}
+			ape.Render(w, pair)
 			break
 		}
 	}
-
-	logger.Infof("checked")
 
 	var req LinkRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -72,9 +69,12 @@ func GetShort(w http.ResponseWriter, r *http.Request) {
 		"shortened": insertedPair.Shortened,
 		"original":  insertedPair.Original,
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		logger.WithError(err).Error("failed to encode response")
 		ape.RenderErr(w)
 	}
+
+	ape.Render(w, response)
 }
