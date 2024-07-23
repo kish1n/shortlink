@@ -12,6 +12,7 @@ type Config interface {
 	comfig.Logger
 	pgdb.Databaser
 	types.Copuser
+
 	comfig.Listenerer
 }
 
@@ -19,8 +20,9 @@ type config struct {
 	comfig.Logger
 	pgdb.Databaser
 	types.Copuser
-	comfig.Listenerer
 	getter kv.Getter
+
+	comfig.Listenerer
 }
 
 func New(getter kv.Getter) Config {

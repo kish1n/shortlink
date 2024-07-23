@@ -3,11 +3,14 @@ package pg
 import (
 	"github.com/kish1n/shortlink/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
+	"log"
 )
 
 func NewMasterQ(db *pgdb.DB) data.MasterQ {
+	dataBase := db.Clone()
+	log.Println("db clone")
 	return &masterQ{
-		db: db.Clone(),
+		db: dataBase,
 	}
 }
 

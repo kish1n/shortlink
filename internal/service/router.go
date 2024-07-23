@@ -2,6 +2,8 @@ package service
 
 import (
 	"github.com/go-chi/chi"
+	"github.com/kish1n/shortlink/internal/config"
+	"github.com/kish1n/shortlink/internal/data/pg"
 	"github.com/kish1n/shortlink/internal/service/handlers"
 	"github.com/kish1n/shortlink/internal/service/helpers"
 	"gitlab.com/distributed_lab/ape"
@@ -9,7 +11,7 @@ import (
 	"net/http"
 )
 
-func (s *service) router() (chi.Router, error) {
+func (s *service) router(cfg config.Config) (chi.Router, error) {
 	r := chi.NewRouter()
 
 	r.Use(
@@ -17,6 +19,7 @@ func (s *service) router() (chi.Router, error) {
 		ape.LoganMiddleware(s.log),
 		ape.CtxMiddleware(
 			helpers.CtxLog(s.log),
+			helpers.CtxDB(pg.NewMasterQ(cfg.DB())),
 		),
 	)
 
