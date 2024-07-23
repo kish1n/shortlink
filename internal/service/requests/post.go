@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/kish1n/shortlink/internal/data"
 	"log"
 	"math/rand"
 	"net/http"
@@ -47,7 +48,7 @@ func AddLinkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, err := initDB()
+	db, err := data.InitDB()
 	if err != nil {
 		http.Error(w, "Database connection error", http.StatusInternalServerError)
 		log.Printf("AddLinkHandler: %v", err)

@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1029
     ports:
-      - "5432:5432"  # Измените внешний порт на 5433, если 5432 занят
+      - "5432:5432"
 
   app:
     build: .
@@ -16,7 +16,7 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1029
-      DB_HOST: db
+      DB_HOST: data
       DB_PORT: 5432
       KV_VIPER_FILE: /usr/local/bin/config.yaml
     ports:

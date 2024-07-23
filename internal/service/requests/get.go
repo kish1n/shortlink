@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-chi/chi"
+	"github.com/kish1n/shortlink/internal/data"
 	"log"
 	"net/http"
 )
@@ -25,7 +26,7 @@ func GetLink(db *sql.DB, shortened string) (string, error) {
 func RedirectHandler(w http.ResponseWriter, r *http.Request) {
 	shortened := chi.URLParam(r, "shortened")
 
-	db, err := initDB()
+	db, err := data.InitDB()
 	if err != nil {
 		http.Error(w, "Database connection error", http.StatusInternalServerError)
 		log.Printf("RedirectHandler: %v", err)
