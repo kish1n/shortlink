@@ -6,9 +6,8 @@ type LinksQ interface {
 	Insert(value CoupleLinks) (*CoupleLinks, error)
 	Update(value CoupleLinks) (*CoupleLinks, error)
 	Delete() error
-
-	FilterByAddress(addresses ...string) LinksQ
-	FilterExpired() LinksQ
+	FilterByShortened(addresses ...string) LinksQ
+	FilterByOriginal(addresses ...string) LinksQ
 }
 
 type CoupleLinks struct {

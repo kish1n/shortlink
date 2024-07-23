@@ -12,12 +12,12 @@ import (
 type MasterQ interface {
 	New() MasterQ
 
-	Nonce() LinksQ
+	Link() LinksQ
 
 	Transaction(fn func(db MasterQ) error) error
 }
 
-func InitDB() (*sql.DB, error) {
+func ConnectDB() (*sql.DB, error) {
 
 	dbName := os.Getenv("POSTGRES_DB")
 	dbUser := os.Getenv("POSTGRES_USER")
@@ -33,8 +33,7 @@ func InitDB() (*sql.DB, error) {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		dbUser, dbPassword, dbHost, dbPort, dbName,
 	)
-
-	fmt.Println("connStr: ", connStr)
+	fmt.Println("db link: ", connStr)
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -44,7 +43,7 @@ func InitDB() (*sql.DB, error) {
 	log.Println("Connected to the database successfully")
 
 	createTableQuery := `
-	CREATE TABLE IF NOT EXISTS links (
+	CREATE TABLE IF NOT EXISTS link (
 		original TEXT NOT NULL,
 		shortened TEXT PRIMARY KEY
 	);`
@@ -54,7 +53,7 @@ func InitDB() (*sql.DB, error) {
 		return nil, fmt.Errorf("error creating table: %v", err)
 	}
 
-	log.Println("Table 'links' checked/created successfully")
+	log.Println("Table 'link' checked/created successfully")
 
 	return db, nil
 }

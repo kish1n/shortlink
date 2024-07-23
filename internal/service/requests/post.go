@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"github.com/kish1n/shortlink/internal/data"
 	"log"
-	"math/rand"
 	"net/http"
-	"time"
 )
 
 type AddLinkRequest struct {
@@ -22,7 +20,7 @@ type AddLinkResponse struct {
 func AddLink(db *sql.DB, original string) (string, error) {
 	var shortened string
 
-	err := db.QueryRow("SELECT shortened FROM links WHERE original = $1", original).Scan(&shortened)
+	err := db.QueryRow("SELECT shortened FROM link WHERE original = $1", original).Scan(&shortened)
 	if err != nil && err != sql.ErrNoRows {
 		return "", fmt.Errorf("error checking existing link: %v", err)
 	}
@@ -31,9 +29,9 @@ func AddLink(db *sql.DB, original string) (string, error) {
 		return shortened, nil
 	}
 
-	shortened = generateShortenedURL()
+	shortened = GenShortURL()
 
-	_, err = db.Exec("INSERT INTO links (original, shortened) VALUES ($1, $2)", original, shortened)
+	_, err = db.Exec("INSERT INTO link (original, shortened) VALUES ($1, $2)", original, shortened)
 	if err != nil {
 		return "", fmt.Errorf("error inserting new link: %v", err)
 	}
@@ -48,7 +46,7 @@ func AddLinkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, err := data.InitDB()
+	db, err := data.ConnectDB()
 	if err != nil {
 		http.Error(w, "Database connection error", http.StatusInternalServerError)
 		log.Printf("AddLinkHandler: %v", err)
@@ -66,14 +64,4 @@ func AddLinkHandler(w http.ResponseWriter, r *http.Request) {
 	resp := AddLinkResponse{Shortened: shortened}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
-}
-
-func generateShortenedURL() string {
-	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	rand.Seed(time.Now().UnixNano())
-	b := make([]byte, 8)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(b)
 }

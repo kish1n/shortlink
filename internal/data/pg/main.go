@@ -19,9 +19,10 @@ func (m *masterQ) New() data.MasterQ {
 	return NewMasterQ(m.db)
 }
 
-func (m *masterQ) Nonce() data.LinksQ {
+func (m *masterQ) Link() data.LinksQ {
 	return newLinksQ(m.db)
 }
+
 func (m *masterQ) Transaction(fn func(q data.MasterQ) error) error {
 	return m.db.Transaction(func() error {
 		return fn(m)

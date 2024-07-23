@@ -12,7 +12,8 @@ import (
 func GetLink(db *sql.DB, shortened string) (string, error) {
 	var original string
 
-	err := db.QueryRow("SELECT original FROM links WHERE shortened = $1", shortened).Scan(&original)
+	err := db.QueryRow("SELECT original FROM link WHERE shortened = $1", shortened).Scan(&original)
+
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return "", nil // Сокращенная ссылка не найдена
@@ -26,7 +27,7 @@ func GetLink(db *sql.DB, shortened string) (string, error) {
 func RedirectHandler(w http.ResponseWriter, r *http.Request) {
 	shortened := chi.URLParam(r, "shortened")
 
-	db, err := data.InitDB()
+	db, err := data.ConnectDB()
 	if err != nil {
 		http.Error(w, "Database connection error", http.StatusInternalServerError)
 		log.Printf("RedirectHandler: %v", err)
