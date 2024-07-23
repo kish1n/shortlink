@@ -9,7 +9,7 @@ import (
 	"gitlab.com/distributed_lab/logan/v3/errors"
 )
 
-const tableName = "link"
+const tableName = "links"
 
 func newLinksQ(db *pgdb.DB) data.LinksQ {
 	return &LinksQ{

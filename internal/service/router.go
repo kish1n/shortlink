@@ -24,8 +24,8 @@ func (s *service) router(cfg config.Config) (chi.Router, error) {
 	)
 
 	r.Route("/integrations/shortlink", func(r chi.Router) {
-		//r.Get("/db", requests.DBHandler)
 		r.Post("/add", handlers.GetShort)
+		//r.Get("/db", requests.DBHandler)
 		//r.Get("/{shortened}", requests.RedirectHandler)
 	})
 
