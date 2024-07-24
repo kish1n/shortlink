@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/kish1n/shortlink/internal/data"
 	"github.com/kish1n/shortlink/internal/service/helpers"
 	"github.com/kish1n/shortlink/internal/service/requests"
 	"gitlab.com/distributed_lab/ape"
@@ -29,26 +28,15 @@ func GetShort(w http.ResponseWriter, r *http.Request) {
 
 	logger.Infof("db con")
 
-	var pair data.CoupleLinks
-
-	for {
-		shortened := requests.GenShortURL()
-		logger.Infof(shortened)
-		existingLink, err := db.Link().FilterByShortened(shortened).Get()
-		if err != nil {
-			logger.WithError(err).Error("failed to query db handlers/short.go 35")
-			ape.RenderErr(w)
-			return
+	res, err := db.Link().FilterByOriginal(original)
+	if err == nil {
+		logger.Infof("here's already a link res %s", res)
+		response := map[string]string{
+			"shortened": res.Shortened,
+			"original":  res.Original,
 		}
-		if existingLink == nil {
-			logger.Info("There's already a link")
-			pair = data.CoupleLinks{
-				Shortened: shortened,
-				Original:  original,
-			}
-			ape.Render(w, pair)
-			break
-		}
+		ape.Render(w, response)
+		return
 	}
 
 	var req LinkRequest
@@ -57,7 +45,7 @@ func GetShort(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	insertedPair, err := db.Link().Insert(pair)
+	insertedPair, err := db.Link().Insert(res)
 
 	if err != nil {
 		logger.WithError(err).Error("failed to query db handlers/short.go 41")
