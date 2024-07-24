@@ -2,6 +2,7 @@ package pg
 
 import (
 	sq "github.com/Masterminds/squirrel"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/fatih/structs"
 	"github.com/kish1n/shortlink/internal/data"
 	"gitlab.com/distributed_lab/kit/pgdb"
@@ -23,14 +24,15 @@ type LinksQ struct {
 }
 
 func (q *LinksQ) FilterByOriginal(original string) (data.CoupleLinks, error) {
-	builder := data.NewCoupleLinksBuilder()
-	result := builder.
-		SetShortened("").
-		SetOriginal(original).
-		Build()
-
+	result := data.CoupleLinks{
+		Shortened: "",
+		Original:  original,
+	}
 	stmt := sq.Select("*").From("links").Where(sq.Eq{"original": original})
 	err := q.db.Get(&result, stmt)
+
+	log.Debug("error %s", err)
+
 	if err != nil {
 		return result, errors.Wrap(err, "failed to select by origin link in db")
 	}
@@ -39,16 +41,18 @@ func (q *LinksQ) FilterByOriginal(original string) (data.CoupleLinks, error) {
 }
 
 func (q *LinksQ) FilterByShortened(shortened string) (data.CoupleLinks, error) {
-	builder := data.NewCoupleLinksBuilder()
-	result := builder.
-		SetShortened(shortened).
-		SetOriginal("").
-		Build()
+	result := data.CoupleLinks{
+		Shortened: shortened,
+		Original:  "",
+	}
 
 	stmt := sq.Select("*").From("links").Where(sq.Eq{"shortened": shortened})
 	err := q.db.Get(&result, stmt)
+
+	log.Debug("error %s", err)
+
 	if err != nil {
-		return result, errors.Wrap(err, "failed to select by origin link in db")
+		return result, err
 	}
 
 	return result, nil

@@ -12,27 +12,3 @@ type CoupleLinks struct {
 }
 
 //TODO replace builder with a struct
-
-type CoupleLinksBuilder struct {
-	coupleLinks CoupleLinks
-}
-
-func NewCoupleLinksBuilder() *CoupleLinksBuilder {
-	return &CoupleLinksBuilder{
-		coupleLinks: CoupleLinks{},
-	}
-}
-
-func (b *CoupleLinksBuilder) SetShortened(shortened string) *CoupleLinksBuilder {
-	b.coupleLinks.Shortened = shortened
-	return b
-}
-
-func (b *CoupleLinksBuilder) SetOriginal(original string) *CoupleLinksBuilder {
-	b.coupleLinks.Original = original
-	return b
-}
-
-func (b *CoupleLinksBuilder) Build() CoupleLinks {
-	return b.coupleLinks
-}

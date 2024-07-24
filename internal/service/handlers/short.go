@@ -26,8 +26,6 @@ func GetShort(w http.ResponseWriter, r *http.Request) {
 	original := request.Original
 	db := helpers.DB(r)
 
-	logger.Infof("db con")
-
 	res, err := db.Link().FilterByOriginal(original)
 
 	if err != nil {
@@ -50,8 +48,8 @@ func GetShort(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(response); err != nil {
 			logger.WithError(err).Error("failed to encode response")
 			ape.RenderErr(w)
-			return
 		}
+		return
 	}
 
 	logger.Infof("here's already a link res %s", res)
@@ -76,17 +74,24 @@ func GetOriginal(w http.ResponseWriter, r *http.Request) {
 	shortened := request
 	db := helpers.DB(r)
 
-	logger.Infof("db con")
-
 	res, err := db.Link().FilterByShortened(shortened)
 
-	if err != nil {
-		logger.Infof("Not found")
-
-		ape.RenderErr(w, &jsonapi.ErrorObject{
+	if res.Original == "" {
+		logger.WithError(err).Debug("Not Found 404")
+		ape.Render(w, &jsonapi.ErrorObject{
 			Status: "404",
-			Title:  "Not Found",
-			Detail: "Link not found",
+			Title:  "Not Found 404",
+			Detail: "Nonexistent link",
+		})
+		return
+	}
+
+	if err != nil {
+		logger.WithError(err).Debug("Server error")
+		ape.Render(w, &jsonapi.ErrorObject{
+			Status: "500",
+			Title:  "Server error 500",
+			Detail: "Unpredictable behavior",
 		})
 		return
 	}
@@ -96,6 +101,7 @@ func GetOriginal(w http.ResponseWriter, r *http.Request) {
 		"shortened": res.Shortened,
 		"original":  res.Original,
 	}
+
 	ape.Render(w, response)
 	return
 }
