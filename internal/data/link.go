@@ -11,6 +11,8 @@ type CoupleLinks struct {
 	Original  string `db:"original" structs:"original"`
 }
 
+//TODO replace builder with a struct
+
 type CoupleLinksBuilder struct {
 	coupleLinks CoupleLinks
 }

@@ -29,39 +29,38 @@ func GetShort(w http.ResponseWriter, r *http.Request) {
 	logger.Infof("db con")
 
 	res, err := db.Link().FilterByOriginal(original)
-	if err == nil {
-		logger.Infof("here's already a link res %s", res)
-		response := map[string]string{
-			"shortened": res.Shortened,
-			"original":  res.Original,
-		}
-		ape.Render(w, response)
-		return
-	}
-
-	logger.Infof("not found %s", res)
-
-	res.Shortened = requests.GenShortURL()
-
-	insertedPair, err := db.Link().Insert(res)
 
 	if err != nil {
-		logger.WithError(err).Error("failed to query db handlers/short.go 41")
-		ape.RenderErr(w)
-		return
+		logger.Infof("not found %s", res)
+		res.Shortened = requests.GenShortURL()
+		insertedPair, err := db.Link().Insert(res)
+
+		if err != nil {
+			logger.WithError(err).Error("failed to query db handlers/short.go 41")
+			ape.RenderErr(w)
+			return
+		}
+
+		response := map[string]string{
+			"shortened": insertedPair.Shortened,
+			"original":  insertedPair.Original,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			logger.WithError(err).Error("failed to encode response")
+			ape.RenderErr(w)
+			return
+		}
 	}
 
+	logger.Infof("here's already a link res %s", res)
 	response := map[string]string{
-		"shortened": insertedPair.Shortened,
-		"original":  insertedPair.Original,
+		"shortened": res.Shortened,
+		"original":  res.Original,
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		logger.WithError(err).Error("failed to encode response")
-		ape.RenderErr(w)
-		return
-	}
+	ape.Render(w, response)
+	return
 }
 
 func GetOriginal(w http.ResponseWriter, r *http.Request) {
@@ -81,22 +80,22 @@ func GetOriginal(w http.ResponseWriter, r *http.Request) {
 
 	res, err := db.Link().FilterByShortened(shortened)
 
-	if err == nil {
-		logger.Infof("here's already a link res %s", res)
-		response := map[string]string{
-			"shortened": res.Shortened,
-			"original":  res.Original,
-		}
-		ape.Render(w, response)
+	if err != nil {
+		logger.Infof("Not found")
+
+		ape.RenderErr(w, &jsonapi.ErrorObject{
+			Status: "404",
+			Title:  "Not Found",
+			Detail: "Link not found",
+		})
 		return
 	}
 
-	logger.Infof("Not found")
-
-	ape.RenderErr(w, &jsonapi.ErrorObject{
-		Status: "404",
-		Title:  "Not Found",
-		Detail: "Link not found",
-	})
+	logger.Infof("here's already a link res %s", res)
+	response := map[string]string{
+		"shortened": res.Shortened,
+		"original":  res.Original,
+	}
+	ape.Render(w, response)
 	return
 }
