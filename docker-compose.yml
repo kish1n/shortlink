@@ -16,7 +16,7 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1029
-      DB_HOST: data
+      DB_HOST: db
       DB_PORT: 5432
       KV_VIPER_FILE: /usr/local/bin/config.yaml
     ports:
