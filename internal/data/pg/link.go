@@ -38,6 +38,22 @@ func (q *LinksQ) FilterByOriginal(original string) (data.CoupleLinks, error) {
 	return result, nil
 }
 
+func (q *LinksQ) FilterByShortened(shortened string) (data.CoupleLinks, error) {
+	builder := data.NewCoupleLinksBuilder()
+	result := builder.
+		SetShortened(shortened).
+		SetOriginal("").
+		Build()
+
+	stmt := sq.Select("*").From("links").Where(sq.Eq{"shortened": shortened})
+	err := q.db.Get(&result, stmt)
+	if err != nil {
+		return result, errors.Wrap(err, "failed to select by origin link in db")
+	}
+
+	return result, nil
+}
+
 func (q *LinksQ) Insert(value data.CoupleLinks) (*data.CoupleLinks, error) {
 	clauses := structs.Map(value)
 

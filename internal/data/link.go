@@ -2,6 +2,7 @@ package data
 
 type LinksQ interface {
 	FilterByOriginal(original string) (CoupleLinks, error)
+	FilterByShortened(shortened string) (CoupleLinks, error)
 	Insert(value CoupleLinks) (*CoupleLinks, error)
 }
 

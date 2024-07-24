@@ -2,6 +2,7 @@ package requests
 
 import (
 	"encoding/json"
+	"github.com/go-chi/chi"
 	"github.com/pkg/errors"
 	"math/rand"
 	"net/http"
@@ -12,6 +13,10 @@ type LinkRequest struct {
 	Original string `json:"original"`
 }
 
+type ShortenedRequest struct {
+	Shortened string `json:"shortened"`
+}
+
 func NewLinkRequest(r *http.Request) (LinkRequest, error) {
 	var request LinkRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -19,6 +24,14 @@ func NewLinkRequest(r *http.Request) (LinkRequest, error) {
 		return request, errors.Wrap(err, "failed to unmarshal")
 	}
 	return request, err
+}
+
+func ShortenedLinkRequest(r *http.Request) (string, error) {
+	shortened := chi.URLParam(r, "shortened")
+	if shortened == "" {
+		return "", errors.New("shortened parameter is required")
+	}
+	return shortened, nil
 }
 
 func GenShortURL() string {

@@ -25,8 +25,7 @@ func (s *service) router(cfg config.Config) (chi.Router, error) {
 
 	r.Route("/integrations/shortlink", func(r chi.Router) {
 		r.Post("/add", handlers.GetShort)
-		//r.Get("/db", requests.DBHandler)
-		//r.Get("/{shortened}", requests.RedirectHandler)
+		r.Get("/{shortened}", handlers.GetOriginal)
 	})
 
 	log.Println("Starting server on :8080")
