@@ -52,5 +52,5 @@ function generate {
 }
 
 parseArgs "$@"
-#echo ${OPENAPI_DIR} ${GENERATED} ${GENERATOR_IMAGE} ${PACKAGE_NAME}
+echo ${OPENAPI_DIR} ${GENERATED} ${GENERATOR_IMAGE} ${PACKAGE_NAME}
 generate

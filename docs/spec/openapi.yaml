@@ -3,5 +3,64 @@ info:
   version: 1.0.0
   title: shortlink
   description: ''
+tags:
+  - name: shortlinks
+    description: Operations about shortlinks
 servers:
   - url: 'https://bridge.demo.io'
+paths:
+  /shortlinks:
+    post:
+      tags:
+        - shortlinks
+      summary: Create a shortlink
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortlinkRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortlinkResponse'
+  /shortlinks/{shortened}:
+    get:
+      tags:
+        - shortlinks
+      summary: Get original link
+      parameters:
+        - name: shortened
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortlinkResponse'
+components:
+  schemas:
+    ShortlinkRequest:
+      type: object
+      properties:
+        original:
+          type: string
+      required:
+        - original
+    ShortlinkResponse:
+      type: object
+      properties:
+        shortened:
+          type: string
+        original:
+          type: string
+      required:
+        - shortened
+        - original
